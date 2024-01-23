@@ -3,6 +3,10 @@ from os import getenv
 import time
 import hmac
 import hashlib
+import orjson
+import pprint
+
+pp = pprint.PrettyPrinter(indent=4)
 
 
 class Fairdesk:
@@ -12,16 +16,19 @@ class Fairdesk:
         self.api_secret = getenv("FAIRDESK_API_SECRET")
 
     def get_uid_info(self, uid):
-        payload = f"/api/v1/private/account/partner-direct-user-deposit?traderUid={uid}"
-        headers = self.generate_headers(payload)
-        r = requests.get(self.base_url + payload, headers=headers)
-        print(r.text)
+        payload = "/api/v1/private/account/partner-direct-user-deposit"
+        query = f"traderUid={uid}"
+        headers = self.generate_headers(payload, query)
+        r = requests.get(self.base_url + payload + f"?{query}", headers=headers)
+        uid_json = orjson.loads(r.text)
+        print(uid_json)
+        pp.pprint(orjson.dumps(uid_json, option=orjson.OPT_INDENT_2))
 
-    def generate_headers(self, payload, recv_window=5000):
+    def generate_headers(self, payload, query, recv_window=10000):
         # recvWindow, may be sent to specify the number of milliseconds after timestamp the request is valid for. If recvWindow is not sent, it defaults to 5000.
         # Serious trading is about timing. Networks can be unstable and unreliable, which can lead to requests taking varying amounts of time to reach the servers. With recvWindow, you can specify that the request must be processed within a certain number of milliseconds or be rejected by the server.
         timestamp = int(time.time() * 1000)
-        sign = self._auth(payload, recv_window, timestamp)
+        sign = self._auth(payload, query, recv_window, timestamp)
         return {
             "X-FAIRDESK-ACCESS-KEY": self.api_key,
             "X-FAIRDESK-REQUEST-SIGNATURE": sign,
@@ -30,9 +37,9 @@ class Fairdesk:
             "Connection": "keep-alive",
         }
 
-    def _auth(self, payload, recv_window, timestamp):
+    def _auth(self, payload, query, recv_window, timestamp):
         """
-        Generates authentication signature per Bybit API specifications.
+        Generates authentication signature per Fairdesk API specifications.
         """
 
         def generate_hmac():
@@ -46,11 +53,11 @@ class Fairdesk:
         if self.api_key is None or self.api_secret is None:
             raise PermissionError("Authenticated endpoints require keys.")
 
-        param_str = payload + str(timestamp + recv_window)
+        param_str = payload + query + str(timestamp + recv_window)
 
         return generate_hmac()
 
 
 if __name__ == "__main__":
     fairdesk = Fairdesk()
-    fairdesk.get_uid_info("100480")
+    fairdesk.get_uid_info("340238")
