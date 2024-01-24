@@ -3,6 +3,7 @@ from os import getenv
 import time
 import hmac
 import hashlib
+from math import trunc
 
 
 class Phemex:
@@ -12,33 +13,33 @@ class Phemex:
         self.api_secret = getenv("PHEMEX_API_SECRET")
 
     def get_uid_info(self, uid):
-        payload = "/api/referral/list"
-        headers = self.generate_headers(payload)
-        r = requests.get(self.base_url + payload, headers=headers)
+        endpoint = "/api/referral/list"
+        headers = self.generate_headers(endpoint)
+        print(headers)
+        r = requests.get(self.base_url + endpoint, headers=headers)
         print(r.text)
         # check if uid is in the list
 
-    def generate_headers(self, payload, recv_window=5000):
-        # recvWindow, may be sent to specify the number of milliseconds after timestamp the request is valid for. If recvWindow is not sent, it defaults to 5000.
+    def generate_headers(self, endpoint, recv_window=60):
+        # recvWindow, may be sent to specify the number of seconds after timestamp the request is valid for. If recvWindow is not sent, it defaults to 5000.
         # Serious trading is about timing. Networks can be unstable and unreliable, which can lead to requests taking varying amounts of time to reach the servers. With recvWindow, you can specify that the request must be processed within a certain number of milliseconds or be rejected by the server.
-        timestamp = int(time.time() * 1000)
-        sign = self._auth(payload, recv_window, timestamp)
+        timestamp = str(trunc(time.time()) + recv_window)
+        sign = self._auth(endpoint, timestamp)
         return {
-            "X-PHEMEX-ACCESS-TOKEN": self.api_key,
-            "X-PHEMEX-REQUEST-SIGNATURE": sign,
-            "X-PHEMEX-REQUEST-EXPIRY": str(timestamp + recv_window),
+            "x-phemex-request-signature": sign,
+            "x-phemex-request-expiry": timestamp,
+            "x-phemex-access-token": self.api_key,
             "Content-Type": "application/json",
-            "Connection": "keep-alive",
         }
 
-    def _auth(self, payload, recv_window, timestamp):
+    def _auth(self, endpoint, timestamp):
         """
-        Generates authentication signature per Bybit API specifications.
+        Generates authentication signature per Phemex API specifications.
         """
 
         def generate_hmac():
             hash = hmac.new(
-                bytes(self.api_secret, "utf-8"),
+                self.api_secret.encode("utf-8"),
                 param_str.encode("utf-8"),
                 hashlib.sha256,
             )
@@ -47,7 +48,8 @@ class Phemex:
         if self.api_key is None or self.api_secret is None:
             raise PermissionError("Authenticated endpoints require keys.")
 
-        param_str = payload + str(timestamp + recv_window)
+        param_str = endpoint + timestamp
+        print(param_str)
 
         return generate_hmac()
 
