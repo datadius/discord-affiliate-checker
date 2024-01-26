@@ -20,9 +20,14 @@ class Fairdesk:
         query = f"traderUid={uid}"
         headers = self.generate_headers(payload, query)
         r = requests.get(self.base_url + payload + f"?{query}", headers=headers)
-        uid_json = orjson.loads(r.text)
-        print(uid_json)
-        pp.pprint(orjson.dumps(uid_json, option=orjson.OPT_INDENT_2))
+        try:
+            uid_json = orjson.loads(r.text)
+            pp.pprint(orjson.dumps(uid_json, option=orjson.OPT_INDENT_2))
+            if int(uid_json["data"]) > 100:
+                return True
+        except Exception as e:
+            print("Issue with processing the request response", e)
+        return False
 
     def generate_headers(self, payload, query, recv_window=10000):
         # recvWindow, may be sent to specify the number of milliseconds after timestamp the request is valid for. If recvWindow is not sent, it defaults to 5000.
