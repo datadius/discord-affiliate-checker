@@ -1,10 +1,13 @@
 import discord
 from fairdesk import Fairdesk
-from discord.ext import commands
+from phemex import Phemex
+from bingx import BingX
+from sql_storage import SQLAffiliate
 import os
 
 intent = discord.Intents.default()
 bot = discord.Bot(intents=intent)
+sql_db = SQLAffiliate()
 
 
 class MyModal(discord.ui.Modal):
@@ -15,12 +18,47 @@ class MyModal(discord.ui.Modal):
         self.add_item(discord.ui.InputText(label="UID"))
 
     async def callback(self, interaction: discord.Interaction):
-        print(self.children[0].value)
-        if isinstance(self.uid_checker, Fairdesk):
-            print("Fairdesk", self.uid_checker.get_uid_info(self.children[0].value))
-        embed = discord.Embed(title="UID")
-        embed.add_field(name="UID", value=self.children[0].value)
-        await interaction.response.send_message(embeds=[embed])
+        is_allowed_as_vip = False
+        already_claimed = True
+
+        try:
+            uid = int(self.children[0].value)
+        except Exception as e:
+            raise Exception(f"UID is not a number {e}")
+
+        try:
+            if (
+                isinstance(self.uid_checker, Fairdesk)
+                or isinstance(self.uid_checker, BingX)
+                or isinstance(self.uid_checker, Phemex)
+            ):
+                is_allowed_as_vip = self.uid_checker.get_uid_info(uid)
+
+        except Exception as e:
+            print("Could not get uid info", e)
+
+        try:
+            already_claimed = sql_db.check_user_exists(uid)
+        except Exception as e:
+            print("Could not check user exists", e)
+
+        try:
+            if is_allowed_as_vip and not already_claimed:
+                await self.change_role(interaction)
+                # store to sqlite database
+                sql_db.add_user(uid)
+        except Exception as e:
+            print("Could not change role", e)
+
+    async def change_role(self, interaction: discord.Interaction):
+        if interaction.guild is not None:
+            if isinstance(interaction.user, discord.Member):
+                # remember to replace with environment variable
+                role = interaction.guild.get_role(1022198615520854026)
+                if role is not None:
+                    await interaction.user.add_roles(role, reason="Has enough deposit")
+                    # change to write to a specific channel
+                    await interaction.response.send_message("Roles Changed")
 
 
 class MyView(discord.ui.View):
@@ -33,11 +71,15 @@ class MyView(discord.ui.View):
 
     @discord.ui.button(label="Phemex", style=discord.ButtonStyle.primary)
     async def phemex_callback(self, button, interaction):
-        await interaction.response.send_modal(MyModal(title="Phemex", source="Phemex"))
+        phemex = Phemex()
+        await interaction.response.send_modal(
+            MyModal(title="Phemex", uid_checker=phemex)
+        )
 
     @discord.ui.button(label="BingX", style=discord.ButtonStyle.primary)
     async def bingx_callback(self, button, interaction):
-        await interaction.response.send_modal(MyModal(title="BingX", source="BingX"))
+        bingx = BingX()
+        await interaction.response.send_modal(MyModal(title="BingX", uid_checker=bingx))
 
 
 @bot.slash_command()
@@ -55,6 +97,7 @@ async def modal(ctx):
 
 @bot.event
 async def on_ready():
+    sql_db.initialize_db()
     print("Bot is ready")
 
 
