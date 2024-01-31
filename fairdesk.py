@@ -15,7 +15,7 @@ class Fairdesk:
         self.api_key = getenv("FAIRDESK_API_KEY")
         self.api_secret = getenv("FAIRDESK_API_SECRET")
 
-    def get_uid_info(self, uid):
+    def get_uid_info(self, uid, value=100):
         payload = "/api/v1/private/account/partner-direct-user-deposit"
         query = f"traderUid={uid}"
         headers = self.generate_headers(payload, query)
@@ -23,7 +23,7 @@ class Fairdesk:
         try:
             uid_json = orjson.loads(r.text)
             pp.pprint(orjson.dumps(uid_json, option=orjson.OPT_INDENT_2))
-            if int(uid_json["data"]) > 100:
+            if int(uid_json["data"]) > value:
                 return True
         except Exception as e:
             print("Issue with processing the request response", e)
