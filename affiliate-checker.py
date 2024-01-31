@@ -47,6 +47,10 @@ class MyModal(discord.ui.Modal):
                 await self.change_role(interaction)
                 # store to sqlite database
                 sql_db.add_user(uid)
+            else:
+                await interaction.response.send_message(
+                    content=f"UID {uid} not valid. Try again", ephemeral=True
+                )
         except Exception as e:
             print("Could not change role", e)
 
@@ -58,25 +62,39 @@ class MyModal(discord.ui.Modal):
                 if role is not None:
                     await interaction.user.add_roles(role, reason="Has enough deposit")
                     # change to write to a specific channel
-                    await interaction.response.send_message("Roles Changed")
+                    await interaction.response.send_message(
+                        content="You received V.I.P", ephemeral=True
+                    )
 
 
 class MyView(discord.ui.View):
-    @discord.ui.button(label="Fairdesk", style=discord.ButtonStyle.primary)
+    @discord.ui.button(
+        label="Fairdesk",
+        style=discord.ButtonStyle.primary,
+        emoji=discord.PartialEmoji(name="Fairdesk", id=1202294233181196298),
+    )
     async def fairdesk_callback(self, button, interaction):
         fairdesk = Fairdesk()
         await interaction.response.send_modal(
             MyModal(title="Fairdesk", uid_checker=fairdesk)
         )
 
-    @discord.ui.button(label="Phemex", style=discord.ButtonStyle.primary)
+    @discord.ui.button(
+        label="Phemex",
+        style=discord.ButtonStyle.primary,
+        emoji=discord.PartialEmoji(name="Phemex", id=1202294230043856926),
+    )
     async def phemex_callback(self, button, interaction):
         phemex = Phemex()
         await interaction.response.send_modal(
             MyModal(title="Phemex", uid_checker=phemex)
         )
 
-    @discord.ui.button(label="BingX", style=discord.ButtonStyle.primary)
+    @discord.ui.button(
+        label="BingX",
+        style=discord.ButtonStyle.primary,
+        emoji=discord.PartialEmoji(name="BingX", id=1202294228412289074),
+    )
     async def bingx_callback(self, button, interaction):
         bingx = BingX()
         await interaction.response.send_modal(MyModal(title="BingX", uid_checker=bingx))
