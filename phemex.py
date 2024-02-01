@@ -83,13 +83,3 @@ class Phemex:
         param_str = endpoint + query + timestamp
 
         return generate_hmac()
-
-
-if __name__ == "__main__":
-    phemex = Phemex()
-    if phemex.get_uid_info(4851337):
-        print("PASSED found 4851337")
-    if not phemex.get_uid_info(4851338):
-        print("PASSED shouldn't find 4851338")
-    if not phemex.get_uid_info(4986580):
-        print("PASSED shouldn't allow 4986580 because less than 100")

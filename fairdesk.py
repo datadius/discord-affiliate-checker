@@ -4,9 +4,6 @@ import time
 import hmac
 import hashlib
 import orjson
-import pprint
-
-pp = pprint.PrettyPrinter(indent=4)
 
 
 class Fairdesk:
@@ -22,7 +19,6 @@ class Fairdesk:
         r = requests.get(self.base_url + payload + f"?{query}", headers=headers)
         try:
             uid_json = orjson.loads(r.text)
-            pp.pprint(orjson.dumps(uid_json, option=orjson.OPT_INDENT_2))
             if int(uid_json["data"]) > value:
                 return True
         except Exception as e:
@@ -61,8 +57,3 @@ class Fairdesk:
         param_str = payload + query + str(timestamp + recv_window)
 
         return generate_hmac()
-
-
-if __name__ == "__main__":
-    fairdesk = Fairdesk()
-    fairdesk.get_uid_info("340238")

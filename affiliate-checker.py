@@ -4,10 +4,27 @@ from phemex import Phemex
 from bingx import BingX
 from sql_storage import SQLAffiliate
 import os
+import logging
 
 intent = discord.Intents.default()
 bot = discord.Bot(intents=intent)
 sql_db = SQLAffiliate()
+
+logger = logging.getLogger("[CROWNBOT]")
+logger.setLevel(logging.INFO)
+
+# create console handler and set level to debug
+ch = logging.StreamHandler()
+ch.setLevel(logging.INFO)
+
+# create formatter
+formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+
+# add formatter to ch
+ch.setFormatter(formatter)
+
+# add ch to logger
+logger.addHandler(ch)
 
 
 class MyModal(discord.ui.Modal):
@@ -35,12 +52,12 @@ class MyModal(discord.ui.Modal):
                 is_allowed_as_vip = self.uid_checker.get_uid_info(uid)
 
         except Exception as e:
-            print("Could not get uid info", e)
+            logger.error("Could not get uid info", e)
 
         try:
             already_claimed = sql_db.check_user_exists(uid)
         except Exception as e:
-            print("Could not check user exists", e)
+            logger.error("Could not check user exists", e)
 
         try:
             if is_allowed_as_vip and not already_claimed:
@@ -52,13 +69,12 @@ class MyModal(discord.ui.Modal):
                     content=f"UID {uid} not valid. Try again", ephemeral=True
                 )
         except Exception as e:
-            print("Could not change role", e)
+            logger.error("Could not change role", e)
 
     async def change_role(self, interaction: discord.Interaction):
         if interaction.guild is not None:
             if isinstance(interaction.user, discord.Member):
-                # remember to replace with environment variable
-                role = interaction.guild.get_role(1022198615520854026)
+                role = interaction.guild.get_role(os.getenv("vip_role_id"))
                 if role is not None:
                     await interaction.user.add_roles(role, reason="Has enough deposit")
                     # change to write to a specific channel
@@ -91,16 +107,6 @@ class MyView(discord.ui.View):
         )
 
 
-# @discord.ui.button(
-#     label="BingX",
-#     style=discord.ButtonStyle.primary,
-#     emoji=discord.PartialEmoji(name="BingX", id=1202315672005386321),
-# )
-# async def bingx_callback(self, button, interaction):
-#     bingx = BingX()
-#     await interaction.response.send_modal(MyModal(title="BingX", uid_checker=bingx))
-
-
 @bot.slash_command()
 async def modal(ctx):
     description = ""
@@ -117,7 +123,10 @@ async def modal(ctx):
 @bot.event
 async def on_ready():
     sql_db.initialize_db()
-    print("Bot is ready")
+    if os.getenv("vip_role_id") is None:
+        logger.info("set the role id by using vip_role_id")
+        exit()
+    logger.info("Bot is ready")
 
 
 bot.run(os.getenv("crown_bot_secret"))
