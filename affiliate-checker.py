@@ -112,7 +112,6 @@ async def modal(ctx):
         description=description,
     )
     await ctx.respond(embed=embed, view=MyView())
-    # await ctx.message.delete()
 
 
 @bot.event
