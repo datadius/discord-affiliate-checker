@@ -71,7 +71,7 @@ class MyView(discord.ui.View):
     @discord.ui.button(
         label="Fairdesk",
         style=discord.ButtonStyle.primary,
-        emoji=discord.PartialEmoji(name="Fairdesk", id=1202294233181196298),
+        emoji=discord.PartialEmoji(name="Fairdesk", id=1202314476855234662),
     )
     async def fairdesk_callback(self, button, interaction):
         fairdesk = Fairdesk()
@@ -82,7 +82,7 @@ class MyView(discord.ui.View):
     @discord.ui.button(
         label="Phemex",
         style=discord.ButtonStyle.primary,
-        emoji=discord.PartialEmoji(name="Phemex", id=1202294230043856926),
+        emoji=discord.PartialEmoji(name="Phemex", id=1202314403358445658),
     )
     async def phemex_callback(self, button, interaction):
         phemex = Phemex()
@@ -90,14 +90,15 @@ class MyView(discord.ui.View):
             MyModal(title="Phemex", uid_checker=phemex)
         )
 
-    @discord.ui.button(
-        label="BingX",
-        style=discord.ButtonStyle.primary,
-        emoji=discord.PartialEmoji(name="BingX", id=1202294228412289074),
-    )
-    async def bingx_callback(self, button, interaction):
-        bingx = BingX()
-        await interaction.response.send_modal(MyModal(title="BingX", uid_checker=bingx))
+
+# @discord.ui.button(
+#     label="BingX",
+#     style=discord.ButtonStyle.primary,
+#     emoji=discord.PartialEmoji(name="BingX", id=1202315672005386321),
+# )
+# async def bingx_callback(self, button, interaction):
+#     bingx = BingX()
+#     await interaction.response.send_modal(MyModal(title="BingX", uid_checker=bingx))
 
 
 @bot.slash_command()
@@ -111,6 +112,7 @@ async def modal(ctx):
         description=description,
     )
     await ctx.respond(embed=embed, view=MyView())
+    # await ctx.message.delete()
 
 
 @bot.event
@@ -119,4 +121,4 @@ async def on_ready():
     print("Bot is ready")
 
 
-bot.run(os.getenv("TEST_DISCORD_BOT_TOKEN"))
+bot.run(os.getenv("crown_bot_secret"))
