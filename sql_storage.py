@@ -3,7 +3,7 @@ import sqlite3
 
 class SQLAffiliate:
     def __init__(self):
-        self.db_path = "./data/affiliate.db"
+        self.db_path = "/data/affiliate.db"
 
     def initialize_db(self):
         db = sqlite3.connect(self.db_path)
