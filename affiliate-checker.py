@@ -87,17 +87,6 @@ class MyModal(discord.ui.Modal):
 
 class MyView(discord.ui.View):
     @discord.ui.button(
-        label="Fairdesk",
-        style=discord.ButtonStyle.primary,
-        emoji=discord.PartialEmoji(name="Fairdesk", id=1202314476855234662),
-    )
-    async def fairdesk_callback(self, button, interaction):
-        fairdesk = Fairdesk()
-        await interaction.response.send_modal(
-            MyModal(title="Fairdesk", uid_checker=fairdesk)
-        )
-
-    @discord.ui.button(
         label="Phemex",
         style=discord.ButtonStyle.primary,
         emoji=discord.PartialEmoji(name="Phemex", id=1202314403358445658),
@@ -106,6 +95,17 @@ class MyView(discord.ui.View):
         phemex = Phemex()
         await interaction.response.send_modal(
             MyModal(title="Phemex", uid_checker=phemex)
+        )
+
+    @discord.ui.button(
+        label="Fairdesk",
+        style=discord.ButtonStyle.primary,
+        emoji=discord.PartialEmoji(name="Fairdesk", id=1202314476855234662),
+    )
+    async def fairdesk_callback(self, button, interaction):
+        fairdesk = Fairdesk()
+        await interaction.response.send_modal(
+            MyModal(title="Fairdesk", uid_checker=fairdesk)
         )
 
 
