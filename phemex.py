@@ -14,6 +14,8 @@ class Phemex:
         self.api_secret = getenv("PHEMEX_API_SECRET")
 
     def get_uid_info(self, uid, value=100):
+        if self.api_key is None or self.api_secret is None:
+            raise PermissionError("Authenticated endpoints require keys.")
         endpoint = "/api/referral/deposits"
         query = "pageSize=100&pageNum=1"
         headers = self.generate_headers(endpoint, query)
