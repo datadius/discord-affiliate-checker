@@ -74,12 +74,14 @@ class MyModal(discord.ui.Modal):
     async def change_role(self, interaction: discord.Interaction):
         if interaction.guild is not None:
             if isinstance(interaction.user, discord.Member):
-                role = interaction.guild.get_role(os.getenv("vip_role_id"))
+                # 1202690292168392784
+                role = interaction.guild.get_role(int(os.getenv("vip_role_id")))
+                logger.info(f"{role} has been given to {interaction.user.name}")
                 if role is not None:
                     await interaction.user.add_roles(role, reason="Has enough deposit")
                     # change to write to a specific channel
                     await interaction.response.send_message(
-                        content="You received V.I.P", ephemeral=True
+                        content=f"You received {role}", ephemeral=True
                     )
 
 
