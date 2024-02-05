@@ -66,7 +66,8 @@ class MyModal(discord.ui.Modal):
                 sql_db.add_user(uid)
             else:
                 await interaction.response.send_message(
-                    content=f"UID {uid} not valid. Try again", ephemeral=True
+                    content=f"UID {uid} not valid or already used. Try again.",
+                    ephemeral=True,
                 )
         except Exception as e:
             logger.error("Could not change role", e)
@@ -81,7 +82,7 @@ class MyModal(discord.ui.Modal):
                     await interaction.user.add_roles(role, reason="Has enough deposit")
                     # change to write to a specific channel
                     await interaction.response.send_message(
-                        content=f"You received {role}", ephemeral=True
+                        content=f"You received {role} role", ephemeral=True
                     )
 
 
@@ -100,7 +101,7 @@ class MyView(discord.ui.View):
     @discord.ui.button(
         label="Fairdesk",
         style=discord.ButtonStyle.primary,
-        emoji=discord.PartialEmoji(name="Fairdesk", id=1202314476855234662),
+        emoji=discord.PartialEmoji(name="Fairdesk2", id=1203053186580221952),
     )
     async def fairdesk_callback(self, button, interaction):
         fairdesk = Fairdesk()
