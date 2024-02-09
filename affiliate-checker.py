@@ -87,6 +87,9 @@ class MyModal(discord.ui.Modal):
 
 
 class MyView(discord.ui.View):
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+
     @discord.ui.button(
         label="Phemex",
         style=discord.ButtonStyle.primary,
@@ -120,7 +123,7 @@ async def modal(ctx):
         color=discord.Color.blurple(),
         description=description,
     )
-    await ctx.respond(embed=embed, view=MyView())
+    await ctx.respond(embed=embed, view=MyView(timeout=None))
 
 
 @bot.event
