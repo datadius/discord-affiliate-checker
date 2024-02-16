@@ -31,7 +31,7 @@ class Phemex:
                 ):
                     return True
 
-            for page in range(2, int(total / 100) + 1):
+            for page in range(2, int(round(total / 100)) + 1):
                 query = f"pageSize=100&pageNum={page}"
                 headers = self.generate_headers(endpoint, query)
                 r = requests.get(
