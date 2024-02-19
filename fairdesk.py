@@ -21,7 +21,7 @@ class Fairdesk:
         r = requests.get(self.base_url + payload + f"?{query}", headers=headers)
         try:
             uid_json = orjson.loads(r.text)
-            if int(uid_json["data"]) > value:
+            if int(uid_json["data"]) >= value:
                 return True
         except Exception as e:
             print("Issue with processing the request response", e)
