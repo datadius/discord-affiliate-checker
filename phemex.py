@@ -24,14 +24,14 @@ class Phemex:
         total = response_json["data"]["total"]
         response_list = response_json["data"]["rows"]
         if int(total) > 100:
-            for index in range(100):
+            for index in range(len(response_list)):
                 if (
                     response_list[index]["userId"] == uid
                     and response_list[index]["depositsRv"] >= value
                 ):
                     return True
 
-            for page in range(2, int(round(total / 100)) + 1):
+            for page in range(2, int(round(total / 100)) + 2):
                 query = f"pageSize=100&pageNum={page}"
                 headers = self.generate_headers(endpoint, query)
                 r = requests.get(
@@ -39,7 +39,7 @@ class Phemex:
                 )
                 response_json = orjson.loads(r.text)
                 response_list = response_json["data"]["rows"]
-                for index in range(100):
+                for index in range(len(response_list)):
                     if (
                         response_list[index]["userId"] == uid
                         and response_list[index]["depositsRv"] >= value
