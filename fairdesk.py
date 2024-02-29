@@ -12,7 +12,7 @@ class Fairdesk:
         self.api_key = getenv("FAIRDESK_API_KEY")
         self.api_secret = getenv("FAIRDESK_API_SECRET")
 
-    def get_uid_info(self, uid, value=100):
+    def get_uid_info(self, uid, value=99):
         if self.api_key is None or self.api_secret is None:
             raise PermissionError("Authenticated endpoints require keys.")
         payload = "/api/v1/private/account/partner-direct-user-deposit"
