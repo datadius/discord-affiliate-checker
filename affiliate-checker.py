@@ -37,11 +37,23 @@ class MyModal(discord.ui.Modal):
     async def callback(self, interaction: discord.Interaction):
         is_allowed_as_vip = False
         already_claimed = True
+        try:
+            uid = self.children[0].value
+        except Exception as e:
+            raise Exception(f"UID hasn't been found {e}")
 
         try:
-            uid = int(self.children[0].value)
+            if uid.isdigit() is False:
+                await interaction.response.send_message(
+                    content="UID should be a number, not email or any other type of word",
+                    ephemeral=True,
+                )
+                logger.error(f"UID {uid} was not a digit")
+                raise Exception(f"UID {uid} was not a digit")
+            else:
+                uid = int(uid)
         except Exception as e:
-            raise Exception(f"UID is not a number {e}")
+            raise Exception(f"Issues when converting the UID {uid} to integer {e}")
 
         try:
             if (
@@ -64,9 +76,18 @@ class MyModal(discord.ui.Modal):
                 await self.change_role(interaction)
                 # store to sqlite database
                 sql_db.add_user(uid)
-            else:
+            elif already_claimed:
+                logger.info(f"UID {uid} already used")
                 await interaction.response.send_message(
-                    content=f"UID {uid} not valid or already used. Try again.",
+                    content=f"UID {uid} already used",
+                    ephemeral=True,
+                )
+            elif not is_allowed_as_vip:
+                logger.info(
+                    f"UID {uid} hasn't been found or doesn't have enough deposit to claim VIP role"
+                )
+                await interaction.response.send_message(
+                    content=f"UID {uid} hasn't been found or doesn't have enough deposit to claim VIP role",
                     ephemeral=True,
                 )
         except Exception as e:
