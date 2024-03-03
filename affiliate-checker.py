@@ -41,6 +41,9 @@ class MyModal(discord.ui.Modal):
             uid = self.children[0].value
         except Exception as e:
             raise Exception(f"UID hasn't been found {e}")
+        exchange = ""
+        username = ""
+        deposit = 0
 
         try:
             if uid.isdigit() is False:
@@ -56,12 +59,11 @@ class MyModal(discord.ui.Modal):
             raise Exception(f"Issues when converting the UID {uid} to integer {e}")
 
         try:
-            if (
-                isinstance(self.uid_checker, Fairdesk)
-                or isinstance(self.uid_checker, BingX)
-                or isinstance(self.uid_checker, Phemex)
+            if isinstance(self.uid_checker, Fairdesk) or isinstance(
+                self.uid_checker, Phemex
             ):
-                is_allowed_as_vip = self.uid_checker.get_uid_info(uid)
+                is_allowed_as_vip, deposit = self.uid_checker.get_uid_info(uid)
+                exchange = self.uid_checker.get_exchange_name()
 
         except Exception as e:
             logger.error("Could not get uid info", e)
@@ -73,9 +75,8 @@ class MyModal(discord.ui.Modal):
 
         try:
             if is_allowed_as_vip and not already_claimed:
-                await self.change_role(interaction)
-                # store to sqlite database
-                sql_db.add_user(uid)
+                username = await self.change_role(interaction)
+                sql_db.add_user(uid, username, deposit, exchange)
             elif already_claimed:
                 logger.info(f"UID {uid} already used")
                 await interaction.response.send_message(
@@ -101,10 +102,10 @@ class MyModal(discord.ui.Modal):
                 logger.info(f"{role} has been given to {interaction.user.name}")
                 if role is not None:
                     await interaction.user.add_roles(role, reason="Has enough deposit")
-                    # change to write to a specific channel
                     await interaction.response.send_message(
                         content=f"You received {role} role", ephemeral=True
                     )
+                    return interaction.user.name
 
 
 class MyView(discord.ui.View):
