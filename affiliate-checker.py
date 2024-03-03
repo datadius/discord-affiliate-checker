@@ -89,7 +89,7 @@ class MyModal(discord.ui.Modal):
                     f"UID {uid} hasn't been found or doesn't have enough deposit to claim VIP role"
                 )
                 await interaction.response.send_message(
-                    content=f"UID {uid} hasn't been found or doesn't have enough deposit to claim VIP role",
+                    content=f"UID {uid} doesn't have enough deposit to claim VIP role",
                     ephemeral=True,
                 )
         except Exception as e:
