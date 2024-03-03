@@ -22,10 +22,13 @@ class Fairdesk:
         try:
             uid_json = orjson.loads(r.text)
             if int(uid_json["data"]) >= value:
-                return True, int(uid_json["data"])
+                return True, int(uid_json["data"]), True
+            elif int(uid_json["data"]) == -9999:
+                return False, 0, False
         except Exception as e:
             print("Issue with processing the request response", e)
-        return False, 0
+            return False, 0, False
+        return False, 0, True
 
     def generate_headers(self, payload, query, recv_window=10000):
         # recvWindow, may be sent to specify the number of milliseconds after timestamp the request is valid for. If recvWindow is not sent, it defaults to 5000.
@@ -62,3 +65,8 @@ class Fairdesk:
 
     def get_exchange_name(self):
         return "Fairdesk"
+
+
+if __name__ == "__main__":
+    fairdesk = Fairdesk()
+    print(fairdesk.get_uid_info("1234567890"))

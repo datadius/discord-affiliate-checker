@@ -45,6 +45,7 @@ class MyModal(discord.ui.Modal):
         exchange = ""
         username = ""
         deposit = 0
+        found = False
 
         try:
             if uid.isdigit() is False:
@@ -63,7 +64,7 @@ class MyModal(discord.ui.Modal):
             if isinstance(self.uid_checker, Fairdesk) or isinstance(
                 self.uid_checker, Phemex
             ):
-                is_allowed_as_vip, deposit = self.uid_checker.get_uid_info(uid)
+                is_allowed_as_vip, deposit, found = self.uid_checker.get_uid_info(uid)
                 exchange = self.uid_checker.get_exchange_name()
 
         except Exception as e:
@@ -84,12 +85,18 @@ class MyModal(discord.ui.Modal):
                     content=f"UID {uid} already used",
                     ephemeral=True,
                 )
-            elif not is_allowed_as_vip:
+            elif not found:
+                logger.info(f"UID {uid} hasn't been found")
+                await interaction.response.send_message(
+                    content=f"UID {uid} hasn't been found in the list",
+                    ephemeral=True,
+                )
+            elif found and not is_allowed_as_vip:
                 logger.info(
                     f"UID {uid} hasn't been found or doesn't have enough deposit to claim VIP role"
                 )
                 await interaction.response.send_message(
-                    content=f"UID {uid} hasn't been found or doesn't have enough deposit to claim VIP role",
+                    content=f"UID {uid} doesn't have enough deposit to claim VIP role",
                     ephemeral=True,
                 )
         except Exception as e:

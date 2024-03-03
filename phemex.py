@@ -29,7 +29,9 @@ class Phemex:
                     response_list[index]["userId"] == uid
                     and response_list[index]["depositsRv"] >= value
                 ):
-                    return True, int(response_list[index]["depositsRv"])
+                    return True, int(response_list[index]["depositsRv"]), True
+                elif response_list[index]["userId"] == uid:
+                    return False, 0, True
 
             for page in range(2, int(round(total / 100)) + 2):
                 query = f"pageSize=100&pageNum={page}"
@@ -44,15 +46,19 @@ class Phemex:
                         response_list[index]["userId"] == uid
                         and response_list[index]["depositsRv"] >= value
                     ):
-                        return True, int(response_list[index]["depositsRv"])
+                        return True, int(response_list[index]["depositsRv"]), True
+                    elif response_list[index]["userId"] == uid:
+                        return False, 0, True
         else:
             for index in range(len(response_list)):
                 if (
                     response_list[index]["userId"] == uid
                     and response_list[index]["depositsRv"] >= value
                 ):
-                    return True, int(response_list[index]["depositsRv"])
-        return False, 0
+                    return True, int(response_list[index]["depositsRv"]), True
+                elif response_list[index]["userId"] == uid:
+                    return False, 0, True
+        return False, 0, False
 
     def generate_headers(self, endpoint, query="", recv_window=60):
         # recvWindow, may be sent to specify the number of seconds after timestamp the request is valid for. If recvWindow is not sent, it defaults to 5000.
