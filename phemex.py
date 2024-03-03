@@ -29,7 +29,7 @@ class Phemex:
                     response_list[index]["userId"] == uid
                     and response_list[index]["depositsRv"] >= value
                 ):
-                    return True
+                    return True, int(response_list[index]["depositsRv"])
 
             for page in range(2, int(round(total / 100)) + 2):
                 query = f"pageSize=100&pageNum={page}"
@@ -44,15 +44,15 @@ class Phemex:
                         response_list[index]["userId"] == uid
                         and response_list[index]["depositsRv"] >= value
                     ):
-                        return True
+                        return True, int(response_list[index]["depositsRv"])
         else:
             for index in range(len(response_list)):
                 if (
                     response_list[index]["userId"] == uid
                     and response_list[index]["depositsRv"] >= value
                 ):
-                    return True
-        return False
+                    return True, int(response_list[index]["depositsRv"])
+        return False, 0
 
     def generate_headers(self, endpoint, query="", recv_window=60):
         # recvWindow, may be sent to specify the number of seconds after timestamp the request is valid for. If recvWindow is not sent, it defaults to 5000.
@@ -85,3 +85,6 @@ class Phemex:
         param_str = endpoint + query + timestamp
 
         return generate_hmac()
+
+    def get_exchange_name(self):
+        return "Phemex"
