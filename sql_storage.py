@@ -54,3 +54,16 @@ class SQLAffiliate:
             cursor.execute("ALTER TABLE users ADD COLUMN username TEXT")
         if "approvalDatetime" not in columns:
             cursor.execute("ALTER TABLE users ADD COLUMN approvalDatetime TEXT")
+
+    def get_users(self):
+        db = sqlite3.connect(self.db_path)
+        cursor = db.cursor()
+        cursor.execute("SELECT * FROM users")
+        users = cursor.fetchall()
+        db.close()
+        return users
+
+
+if __name__ == "__main__":
+    sql_db = SQLAffiliate()
+    print(sql_db.get_users())
