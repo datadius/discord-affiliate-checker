@@ -32,7 +32,7 @@ class MyModal(discord.ui.Modal):
         self.uid_checker = uid_checker
         super().__init__(*args, **kwargs)
 
-        self.add_item(discord.ui.InputText(label="UID"))
+        self.add_item(discord.ui.InputText(label="UID (User ID Number)"))
 
     async def callback(self, interaction: discord.Interaction):
         is_allowed_as_vip = False
