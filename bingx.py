@@ -41,6 +41,9 @@ class BingX:
 
         return generate_hmac()
 
+    def get_exchange_name(self):
+        return "BingX"
+
 
 if __name__ == "__main__":
     bingx = BingX()
