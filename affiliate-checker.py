@@ -1,10 +1,11 @@
 import discord
 from fairdesk import Fairdesk
 from phemex import Phemex
-from bingx import BingX
 from sql_storage import SQLAffiliate
 import os
 import logging
+import pandas as pd
+import io
 
 intent = discord.Intents.default()
 bot = discord.Bot(intents=intent)
@@ -146,6 +147,22 @@ async def modal(ctx):
         description=description,
     )
     await ctx.respond(embed=embed, view=MyView(timeout=None))
+
+
+@bot.slash_command()
+async def stats(ctx):
+    users = sql_db.get_users()
+    df_users = pd.DataFrame(
+        users,
+        columns=["id", "uid", "exchange", "deposit", "username", "approval_datetime"],
+    )
+    df_users = df_users.drop(columns=["id"])
+    arr = io.BytesIO()
+    df_users.to_csv(arr, index=False)
+    arr.seek(0)
+    await ctx.respond(
+        file=discord.File(arr, filename="users.csv"), content="Here are the stats:"
+    )
 
 
 @bot.event
