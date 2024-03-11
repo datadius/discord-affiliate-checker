@@ -148,7 +148,7 @@ class MyView(discord.ui.View):
     @discord.ui.button(
         label="BingX",
         style=discord.ButtonStyle.primary,
-        emoji=discord.PartialEmoji(name="BingX", id=1202314403358445658),
+        emoji=discord.PartialEmoji(name="BingX", id=1202315672005386321),
     )
     async def bingx_callback(self, button, interaction):
         bingx = BingX()
