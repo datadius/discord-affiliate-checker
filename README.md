@@ -4,7 +4,6 @@ Client has requested a discord bot that checks three exchanges for affiliate dat
 
 Phemex, Bingx, Fairdesk
 
-![image](https://github.com/datadius/discord-affiliate-checker/assets/16731794/ecaedb44-c0fc-42b3-8e8d-477bde78bacc)
-
+Soon to add MEXC and Bybit.
 
 To get ID of emoji, use \:emoji_name:

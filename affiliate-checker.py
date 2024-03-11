@@ -1,6 +1,7 @@
 import discord
 from fairdesk import Fairdesk
 from phemex import Phemex
+from bingx import BingX
 from sql_storage import SQLAffiliate
 import os
 import logging
@@ -61,8 +62,10 @@ class MyModal(discord.ui.Modal):
             raise Exception(f"Issues when converting the UID {uid} to integer {e}")
 
         try:
-            if isinstance(self.uid_checker, Fairdesk) or isinstance(
-                self.uid_checker, Phemex
+            if (
+                isinstance(self.uid_checker, Fairdesk)
+                or isinstance(self.uid_checker, Phemex)
+                or isinstance(self.uid_checker, BingX)
             ):
                 is_allowed_as_vip, deposit, found = self.uid_checker.get_uid_info(uid)
                 exchange = self.uid_checker.get_exchange_name()
@@ -141,6 +144,15 @@ class MyView(discord.ui.View):
         await interaction.response.send_modal(
             MyModal(title="Fairdesk", uid_checker=fairdesk)
         )
+
+    @discord.ui.button(
+        label="BingX",
+        style=discord.ButtonStyle.primary,
+        emoji=discord.PartialEmoji(name="BingX", id=1202315672005386321),
+    )
+    async def bingx_callback(self, button, interaction):
+        bingx = BingX()
+        await interaction.response.send_modal(MyModal(title="BingX", uid_checker=bingx))
 
 
 @bot.slash_command()
