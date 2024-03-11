@@ -6,6 +6,8 @@
 
 <:Phemex:1202314403358445658> [Phemex](https://tomcrown.io/phemex)
 
+<:BingX:1202314403358445658> [BingX](https://tomcrown.io/bingx)
+
 2️⃣ Make a deposit of 100$ on the exchange.
 
 3️⃣ Wait for about 48 hours.
