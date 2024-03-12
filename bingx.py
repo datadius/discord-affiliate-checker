@@ -34,7 +34,11 @@ class BingX:
                 balance,
                 True,
             )
-        elif user_info.get("uid") is None:
+        elif (
+            user_info.get("uid") is not None
+            and user_info.get("balanceVolume") is None
+            and user_info.get("inviteResult") != False
+        ):
             return False, 0, True
 
         return False, 0, False
