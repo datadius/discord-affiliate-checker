@@ -159,7 +159,7 @@ class MyView(discord.ui.View):
     @discord.ui.button(
         label="Bybit",
         style=discord.ButtonStyle.primary,
-        emoji=discord.PartialEmoji(name="Bybit", id=1202315672005386321),
+        emoji=discord.PartialEmoji(name="ByBitEmoji", id=1217198629853462529),
     )
     async def bybit_callback(self, button, interaction):
         bybit = Bybit()
