@@ -4,6 +4,7 @@ import hmac
 import hashlib
 import time
 import orjson
+import datetime
 from urllib.parse import urlencode, quote
 
 
@@ -15,7 +16,16 @@ class MEXC:
 
     def get_uid_info(self, uid, value=99):
         endpoint = "/api/v3/rebate/affiliate/referral"
-        params = {uid: uid, "recWindow": 10000, "timestamp": int(time.time() * 1000)}
+        startTime = datetime.datetime.now() - datetime.timedelta(days=365)
+        startTime = int(startTime.timestamp() * 1000)
+        timestamp = int(time.time() * 1000)
+        params = {
+            "startTime": startTime,
+            "endTime": timestamp,
+            "uid": uid,
+            "recWindow": 10000,
+            "timestamp": timestamp,
+        }
         params["signature"] = self._auth(params)
         r = requests.get(
             f"{self.base_url}{endpoint}",
@@ -28,7 +38,7 @@ class MEXC:
         if len(user_info) > 0:
             deposit = user_info[0].get("depositAmount")
             if deposit is not None:
-                deposit = int(deposit)
+                deposit = int(deposit.partition(".")[0])
                 uid = user_info[0].get("uid")
 
                 if uid == uid and deposit >= value:
@@ -46,7 +56,7 @@ class MEXC:
         if self.api_key is None or self.api_secret is None:
             raise PermissionError("Authenticated endpoints require keys.")
 
-        to_sign = urlencode(params.upper(), quote_via=quote)
+        to_sign = urlencode(params, quote_via=quote)
 
         def generate_hmac():
             hash = hmac.new(
