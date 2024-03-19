@@ -3,6 +3,8 @@ from fairdesk import Fairdesk
 from phemex import Phemex
 from bingx import BingX
 from bybit import Bybit
+from mexc import MEXC
+from coinbaseimpact import CoinbaseImpact
 from sql_storage import SQLAffiliate
 import os
 import logging
@@ -68,6 +70,7 @@ class MyModal(discord.ui.Modal):
                 or isinstance(self.uid_checker, Phemex)
                 or isinstance(self.uid_checker, BingX)
                 or isinstance(self.uid_checker, Bybit)
+                or isinstance(self.uid_checker, MEXC)
             ):
                 is_allowed_as_vip, deposit, found = self.uid_checker.get_uid_info(uid)
                 exchange = self.uid_checker.get_exchange_name()
@@ -164,6 +167,26 @@ class MyView(discord.ui.View):
     async def bybit_callback(self, button, interaction):
         bybit = Bybit()
         await interaction.response.send_modal(MyModal(title="Bybit", uid_checker=bybit))
+
+    @discord.ui.button(
+        label="MEXC",
+        style=discord.ButtonStyle.primary,
+        emoji=discord.PartialEmoji(name="MEXC", id=1219723839513296967),
+    )
+    async def mexc_callback(self, button, interaction):
+        mexc = MEXC()
+        await interaction.response.send_modal(MyModal(title="MEXC", uid_checker=mexc))
+
+    @discord.ui.button(
+        label="Coinbase",
+        style=discord.ButtonStyle.primary,
+        emoji=discord.PartialEmoji(name="coinbase", id=1219723064594403399),
+    )
+    async def coinbase_callback(self, button, interaction):
+        coinbase = CoinbaseImpact()
+        await interaction.response.send_modal(
+            MyModal(title="Coinbase", uid_checker=coinbase)
+        )
 
 
 @bot.slash_command()
