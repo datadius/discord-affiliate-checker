@@ -16,35 +16,58 @@ class MEXC:
 
     def get_uid_info(self, uid, value=99):
         endpoint = "/api/v3/rebate/affiliate/referral"
-        startTime = datetime.datetime.now() - datetime.timedelta(days=365)
-        startTime = int(startTime.timestamp() * 1000)
         timestamp = int(time.time() * 1000)
         params = {
-            "startTime": startTime,
-            "endTime": timestamp,
-            "uid": uid,
             "recWindow": 10000,
+            "pageSize": 100,
             "timestamp": timestamp,
         }
         params["signature"] = self._auth(params)
+        headers = {"X-MEXC-APIKEY": self.api_key, "Content-Type": "application/json"}
         r = requests.get(
             f"{self.base_url}{endpoint}",
             params=params,
-            headers={"X-MEXC-APIKEY": self.api_key, "Content-Type": "application/json"},
+            headers=headers,
         )
 
         print(r.text)
-        user_info = orjson.loads(r.text)["data"]["resultList"]
+        response_json = orjson.loads(r.text)
+        user_info = response_json["data"]["resultList"]
+        totalPage = int(response_json["data"]["totalPage"])
+        currentPage = int(response_json["data"]["currentPage"])
         if len(user_info) > 0:
-            deposit = user_info[0].get("depositAmount")
-            if deposit is not None:
-                deposit = int(deposit.partition(".")[0])
-                uid = user_info[0].get("uid")
+            for user in user_info:
+                deposit = user[0].get("deposit")
+                if deposit is not None:
+                    deposit = int(deposit.partition(".")[0])
+                    uid_mexc = user[0].get("uid")
 
-                if uid == uid and deposit >= value:
-                    return True, deposit, True
-                elif uid is not None:
-                    return False, 0, True
+                    if uid == uid_mexc and deposit >= value:
+                        return True, deposit, True
+                    elif uid_mexc is not None:
+                        return False, 0, True
+            currentPage += 1
+            while currentPage <= totalPage:
+                params["page"] = currentPage
+                params["timestamp"] = int(time.time() * 1000)
+                params["signature"] = self._auth(params)
+                r = requests.get(
+                    f"{self.base_url}{endpoint}", params=params, headers=headers
+                )
+                response_json = orjson.loads(r.text)
+                user_info = response_json["data"]["resultList"]
+                for user in user_info:
+                    deposit = user[0].get("deposit")
+                    if deposit is not None:
+                        deposit = int(deposit.partition(".")[0])
+                        uid_mexc = user[0].get("uid")
+
+                        if uid == uid_mexc and deposit >= value:
+                            return True, deposit, True
+                        elif uid_mexc is not None:
+                            return False, 0, True
+
+                currentPage += 1
 
         return False, 0, False
 
