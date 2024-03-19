@@ -4,6 +4,7 @@ import hmac
 import hashlib
 import time
 import orjson
+from urllib.parse import urlencode, quote
 
 
 class MEXC:
@@ -14,7 +15,7 @@ class MEXC:
 
     def get_uid_info(self, uid, value=99):
         endpoint = "/api/v3/rebate/affiliate/referral"
-        params = f"uid={uid}&recWindow=10000&timestamp={int(time.time() * 1000)}"
+        params = f"uid={uid}&recWindow=10000"
         params = self._auth(params)
         print(f"{self.base_url}{endpoint}?{params}")
         r = requests.get(
@@ -45,10 +46,12 @@ class MEXC:
         if self.api_key is None or self.api_secret is None:
             raise PermissionError("Authenticated endpoints require keys.")
 
+        to_sign = f"{self.api_key}{urlencode(params.upper(), quote_via=quote)}{int(time.time() * 1000)}"
+
         def generate_hmac():
             hash = hmac.new(
                 self.api_secret.encode("utf-8"),
-                params.upper().encode("utf-8"),
+                to_sign.encode("utf-8"),
                 hashlib.sha256,
             )
             return f"{params}&signature={hash.hexdigest()}"
