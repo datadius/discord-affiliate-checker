@@ -17,7 +17,17 @@ class MEXC:
     def get_uid_info(self, uid, value=99):
         endpoint = "/api/v3/rebate/affiliate/referral"
         timestamp = int(time.time() * 1000)
-        params = {"uid": uid, "recWindow": 10000, "timestamp": timestamp}
+        endTime = int(time.time() * 1000)
+        startTime = int(
+            (datetime.datetime.now() - datetime.timedelta(days=180)).timestamp() * 1000
+        )
+        params = {
+            "uid": uid,
+            "recWindow": 10000,
+            "startTime": startTime,
+            "endTime": endTime,
+            "timestamp": timestamp,
+        }
         params["signature"] = self._auth(params)
         r = requests.get(
             f"{self.base_url}{endpoint}",
