@@ -90,5 +90,5 @@ class Bybit:
 if __name__ == "__main__":
     bybit = Bybit()
     print("(True, 16190, True) ", bybit.get_uid_info("49938035"))
-    print("(False, 0, False) ", bybit.get_uid_info("49933035"))
+    print("(False, 0, False) ", bybit.get_uid_info("5027104"))
     print("(False, 0, True) ", bybit.get_uid_info("49938035", value=1000))
