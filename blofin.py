@@ -1,11 +1,11 @@
 import requests
 from os import getenv
 import hmac
-import hashlib
+from hashlib import sha256
+import base64
 import time
 import orjson
 import datetime
-from urllib.parse import urlencode, quote
 import secrets
 
 
@@ -17,21 +17,27 @@ class Blofin:
         self.api_passphrase = getenv("BLOFIN_API_PASSPHRASE")
 
     def get_uid_info(self, uid, value=99):
-        endpoint = "https://openapi.blofin.com"
+        endpoint = "/api/v1/affiliate/invitees"
         timestamp = str(int(time.time() * 1000))
-        params = {
-            "uid": uid,
-        }
+
+        nonce = secrets.token_urlsafe()
+
+        prehash_string = f"{endpoint}?uid={uid}{'GET'}{timestamp}{nonce}{''}"
+        print(prehash_string)
 
         r = requests.get(
             f"{self.base_url}{endpoint}",
-            params=params,
-            headers={"ACCESS-KEY": self.api_key,
-                     "ACCESS-SIGN":self._auth(params),
-                     "ACCESS-TIMESTAMP":timestamp,
-                     "ACCESS-NONCE":secrets.token_urlsafe(),
-                     "ACCESS-PASSPHRASE": self.api_passphrase,
-                     "Content-Type": "application/json"},
+            params={
+                "uid": uid,
+            },
+            headers={
+                "ACCESS-KEY": self.api_key,
+                "ACCESS-SIGN": self._auth(prehash_string),
+                "ACCESS-TIMESTAMP": timestamp,
+                "ACCESS-NONCE": nonce,
+                "ACCESS-PASSPHRASE": self.api_passphrase,
+                "Content-Type": "application/json",
+            },
         )
 
         print(r.text)
@@ -49,7 +55,7 @@ class Blofin:
 
         return False, 0, False
 
-    def _auth(self, params):
+    def _auth(self, prehash_string):
         """
         Generates authentication signature per Phemex API specifications.
         """
@@ -57,17 +63,36 @@ class Blofin:
         if self.api_key is None or self.api_secret is None:
             raise PermissionError("Authenticated endpoints require keys.")
 
-        to_sign = urlencode(params, quote_via=quote)
-
         def generate_hmac():
-            hash = hmac.new(
-                self.api_secret.encode("utf-8"),
-                to_sign.encode("utf-8"),
-                hashlib.sha256,
-            )
-            return hash.hexdigest()
+            return base64.b64encode(
+                hmac.new(self.api_secret.encode(), prehash_string.encode(), sha256)
+                .hexdigest()
+                .encode()
+            ).decode()
 
         return generate_hmac()
+
+    def get_uids(self):
+        endpoint = "/api/v1/affiliate/invitees"
+        timestamp = str(int(time.time() * 1000))
+
+        nonce = secrets.token_urlsafe()
+
+        prehash_string = f"{endpoint}{'GET'}{timestamp}{nonce}{''}"
+
+        r = requests.get(
+            f"{self.base_url}{endpoint}",
+            headers={
+                "ACCESS-KEY": self.api_key,
+                "ACCESS-SIGN": self._auth(prehash_string),
+                "ACCESS-TIMESTAMP": timestamp,
+                "ACCESS-NONCE": nonce,
+                "ACCESS-PASSPHRASE": self.api_passphrase,
+                "Content-Type": "application/json",
+            },
+        )
+
+        print(r.text)
 
     def get_exchange_name(self):
         return "Blofin"
@@ -75,5 +100,8 @@ class Blofin:
 
 if __name__ == "__main__":
     blofin = Blofin()
-    print("False, 0, False", blofin.get_uid_info("1234"))
-    print("True, >100, True", blofin.get_uid_info("68502381"))
+    blofin.get_uids()
+    print("False, 0, True", blofin.get_uid_info("6413673725"))
+    print("False, 0, True", blofin.get_uid_info("6341236829"))
+    print("False, 0, True", blofin.get_uid_info("6289116603"))
+    print("False, 0, False", blofin.get_uid_info("12345"))
