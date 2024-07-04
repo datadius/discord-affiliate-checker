@@ -3,6 +3,7 @@ from fairdesk import Fairdesk
 from phemex import Phemex
 from bingx import BingX
 from bybit import Bybit
+from blofin import Blofin
 from coinbaseimpact import CoinbaseImpact
 from sql_storage import SQLAffiliate
 import os
@@ -69,6 +70,7 @@ class MyModal(discord.ui.Modal):
                 or isinstance(self.uid_checker, Phemex)
                 or isinstance(self.uid_checker, BingX)
                 or isinstance(self.uid_checker, Bybit)
+                or isinstance(self.uid_checker, Blofin)
             ):
                 is_allowed_as_vip, deposit, found = self.uid_checker.get_uid_info(uid)
                 exchange = self.uid_checker.get_exchange_name()
@@ -175,6 +177,17 @@ class MyView(discord.ui.View):
         coinbase = CoinbaseImpact()
         await interaction.response.send_modal(
             MyModal(title="Coinbase", uid_checker=coinbase)
+        )
+
+    @discord.ui.button(
+        label="Blofin",
+        style=discord.ButtonStyle.primary,
+        emoji=discord.PartialEmoji(name="blofin", id=1219723064594403399),
+    )
+    async def blofin_callback(self, button, interaction):
+        blofin = Blofin()
+        await interaction.response.send_modal(
+            MyModal(title="Blofin", uid_checker=blofin)
         )
 
 
