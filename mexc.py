@@ -43,7 +43,7 @@ class MEXC:
                 deposit = int(deposit.partition(".")[0])
                 uid_mexc = user_info[0].get("uid")
 
-                if uid == uid_mexc and deposit >= value:
+                if str(uid) == uid_mexc and deposit >= value:
                     return True, deposit, True
                 elif uid is not None:
                     return False, 0, True

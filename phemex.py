@@ -23,6 +23,7 @@ class Phemex:
         response_json = orjson.loads(r.text)
         total = response_json["data"]["total"]
         response_list = response_json["data"]["rows"]
+        uid = str(uid)
         if int(total) > 100:
             for index in range(len(response_list)):
                 if (
