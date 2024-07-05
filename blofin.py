@@ -47,8 +47,9 @@ class Blofin:
             if deposit is not None:
                 deposit = int(deposit.partition(".")[0])
                 uid_blofin = user_info[0].get("uid")
+                print(deposit, value, deposit >= value)
 
-                if uid == uid_blofin and deposit >= value:
+                if str(uid) == uid_blofin and deposit >= value:
                     return True, deposit, True
                 elif uid is not None:
                     return False, 0, True
