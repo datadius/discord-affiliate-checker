@@ -182,7 +182,7 @@ class MyView(discord.ui.View):
     @discord.ui.button(
         label="Blofin",
         style=discord.ButtonStyle.primary,
-        emoji=discord.PartialEmoji(name="blofin", id=1219723064594403399),
+        emoji=discord.PartialEmoji(name="blofin", id=1258510663387582495),
     )
     async def blofin_callback(self, button, interaction):
         blofin = Blofin()
