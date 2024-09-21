@@ -13,7 +13,6 @@ import io
 import sys
 import time
 from aiohttp import ClientResponse
-from discord.ext import commands
 import traceback
 
 
@@ -26,6 +25,7 @@ async def on_error(self, event_method, *args, **kwargs):
     overridden to have a different implementation.
     Check :func:`~discord.on_error` for more details.
     """
+    logger.info(f"type of function {type(event_method)}")
     if isinstance(event_method, discord.errors.HTTPException):
         if isinstance(event_method.response, ClientResponse):
             text = await event_method.response.text()
