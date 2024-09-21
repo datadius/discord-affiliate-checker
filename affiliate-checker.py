@@ -204,7 +204,16 @@ async def modal(ctx):
         color=discord.Color.blurple(),
         description=description,
     )
-    await ctx.respond(embed=embed, view=MyView(timeout=None))
+    try:
+        await ctx.respond(embed=embed, view=MyView(timeout=None))
+    except discord.errors.HTTPException as e:
+        logger.info(e.response)
+        logger.info(e.response.text)
+        logger.info(e.response.headers)
+        if e.response.headers.get("Retry-After"):
+            logger.info(f"Waiting for {e.response.headers["Retry-After"]}")
+            time.sleep(int(e.response.headers["Retry-After"]))
+        sys.exit(1)
 
 
 @bot.slash_command()
