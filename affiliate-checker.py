@@ -231,8 +231,8 @@ async def on_ready():
     logger.info("Bot is ready")
 
 try:
-    bot.run(os.getenv("crown_bot_secret"), log_handler = logger)
-except discord.HTTPException as e:
+    bot.run(os.getenv("crown_bot_secret"))
+except discord.errors.HTTPException as e:
     print(e.response)
     print(e.response.headers)
     sys.exit(1)
