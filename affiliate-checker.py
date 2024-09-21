@@ -11,6 +11,7 @@ import logging
 import pandas as pd
 import io
 import sys
+import time
 
 intent = discord.Intents.default()
 bot = discord.Bot(intents=intent)
@@ -230,9 +231,13 @@ async def on_ready():
         exit()
     logger.info("Bot is ready")
 
+
 try:
     bot.run(os.getenv("crown_bot_secret"))
 except discord.errors.HTTPException as e:
     print(e.response)
     print(e.response.headers)
+    if e.response.headers.get("Retry-After"):
+        time.sleep(int(e.response.headers["Retry-After"]))
+        logger.info(f"Waiting for {e.response.headers["Retry-After"]}")
     sys.exit(1)
