@@ -12,9 +12,34 @@ import pandas as pd
 import io
 import sys
 import time
+from aiohttp import ClientResponse
+from discord.ext import commands
+import traceback
+
+
+async def on_error(self, event_method, *args, **kwargs):
+    """|coro|
+
+    The default error handler provided by the client.
+
+    By default, this prints to :data:`sys.stderr` however it could be
+    overridden to have a different implementation.
+    Check :func:`~discord.on_error` for more details.
+    """
+    if isinstance(event_method, discord.errors.HTTPException):
+        if isinstance(event_method.response, ClientResponse):
+            text = await event_method.response.text()
+            logger.info(text)
+    else:
+        print(f"Ignoring exception in {event_method}", file=sys.stderr)
+        traceback.print_exc()
+
+
+discord.Bot.on_error = on_error
 
 intent = discord.Intents.default()
 bot = discord.Bot(intents=intent)
+
 sql_db = SQLAffiliate()
 
 logger = logging.getLogger("[CROWNBOT]")
@@ -244,8 +269,6 @@ async def on_ready():
 try:
     bot.run(os.getenv("crown_bot_secret"))
 except discord.errors.HTTPException as e:
-    logger.info(e.response)
-    logger.info(e.response.text)
     logger.info(e.response.headers)
     if e.response.headers.get("Retry-After"):
         logger.info(f"Waiting for {e.response.headers["Retry-After"]}")
