@@ -9,7 +9,7 @@ import orjson
 
 class Phemex:
     def __init__(self):
-        self.base_url = "https://api-3rd.phemex.com"
+        self.base_url = "http://vapi.phemex.com"
         self.api_key = getenv("PHEMEX_API_KEY")
         self.api_secret = getenv("PHEMEX_API_SECRET")
 
