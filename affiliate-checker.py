@@ -10,6 +10,7 @@ import os
 import logging
 import pandas as pd
 import io
+import sys
 
 intent = discord.Intents.default()
 bot = discord.Bot(intents=intent)
@@ -42,6 +43,7 @@ class MyModal(discord.ui.Modal):
     async def callback(self, interaction: discord.Interaction):
         is_allowed_as_vip = False
         already_claimed = True
+        logger.info(f"User {interaction.user.name} is trying to get vip")
         try:
             uid = self.children[0].value
         except Exception as e:
@@ -228,5 +230,8 @@ async def on_ready():
         exit()
     logger.info("Bot is ready")
 
-
-bot.run(os.getenv("crown_bot_secret"))
+try:
+    bot.run(os.getenv("crown_bot_secret"), log_handler = logger)
+except Exception as e:
+    print(e)
+    sys.exit(1)
