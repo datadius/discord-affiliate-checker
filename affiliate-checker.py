@@ -235,9 +235,9 @@ async def on_ready():
 try:
     bot.run(os.getenv("crown_bot_secret"))
 except discord.errors.HTTPException as e:
-    print(e.response)
-    print(e.response.text)
-    print(e.response.headers)
+    logger.info(e.response)
+    logger.info(e.response.text)
+    logger.info(e.response.headers)
     if e.response.headers.get("Retry-After"):
         logger.info(f"Waiting for {e.response.headers["Retry-After"]}")
         time.sleep(int(e.response.headers["Retry-After"]))
