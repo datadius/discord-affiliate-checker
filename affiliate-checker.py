@@ -232,6 +232,7 @@ async def on_ready():
 
 try:
     bot.run(os.getenv("crown_bot_secret"), log_handler = logger)
-except Exception as e:
-    print(e)
+except discord.HTTPException as e:
+    print(e.response)
+    print(e.response.headers)
     sys.exit(1)
