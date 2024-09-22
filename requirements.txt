@@ -16,6 +16,7 @@ packaging==24.1
 pandas==2.2.3
 pathspec==0.12.1
 platformdirs==4.3.6
+psycopg2==2.9.9
 py-cord @ git+https://github.com/Pycord-Development/pycord@bef59ac6592dbe666e0bd4ef337d05bc89b86416
 python-dateutil==2.9.0.post0
 pytz==2024.2

@@ -5,7 +5,7 @@ from bingx import BingX
 from bybit import Bybit
 from blofin import Blofin
 from coinbaseimpact import CoinbaseImpact
-from sql_storage import SQLAffiliate
+from postgresql_storage import SQLAffiliate
 import os
 import logging
 import pandas as pd
