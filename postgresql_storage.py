@@ -17,7 +17,7 @@ class SQLAffiliate:
         db = psycopg2.connect(**self.db_path)
         cursor = db.cursor()
         cursor.execute(
-            "CREATE TABLE IF NOT EXISTS users (id SERIAL PRIMARY KEY, uid TEXT, approvalDatetime TEXT, username TEXT, deposit INTEGER, exchange TEXT)"
+            "CREATE TABLE IF NOT EXISTS users (id SERIAL PRIMARY KEY, uid TEXT, approvalDatetime TEXT, username TEXT, deposit INTEGER, exchange TEXT);"
         )
         db.commit()
         db.close()
@@ -27,7 +27,7 @@ class SQLAffiliate:
         now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         cursor = db.cursor()
         cursor.execute(
-            "INSERT INTO users (uid, approvalDatetime, username, deposit, exchange) VALUES (?,?,?,?,?)",
+            "INSERT INTO users (uid, approvalDatetime, username, deposit, exchange) VALUES (?,?,?,?,?);",
             (uid, now, username, deposit, exchange),
         )
         db.commit()
@@ -36,7 +36,7 @@ class SQLAffiliate:
     def check_user_exists(self, uid):
         db = psycopg2.connect(**self.db_path)
         cursor = db.cursor()
-        cursor.execute("SELECT * FROM users WHERE uid=?", (uid,))
+        cursor.execute("SELECT * FROM users WHERE uid=?;", (uid,))
         user = cursor.fetchone()
         db.close()
         if user:
@@ -46,7 +46,7 @@ class SQLAffiliate:
     def get_users(self):
         db = psycopg2.connect(**self.db_path)
         cursor = db.cursor()
-        cursor.execute("SELECT * FROM users")
+        cursor.execute("SELECT * FROM users;")
         users = cursor.fetchall()
         db.close()
         return users
