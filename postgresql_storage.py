@@ -30,7 +30,7 @@ class SQLAffiliate:
         now = str(now)
         cursor.execute(
             "INSERT INTO users (uid, approvalDatetime, username, deposit, exchange) VALUES (%s,%s,%s,%s,%s);",
-            (uid, now, username, deposit, exchange),
+            (uid, now, username, deposit, exchange,),
         )
         db.commit()
         db.close()
@@ -39,7 +39,7 @@ class SQLAffiliate:
         db = psycopg2.connect(**self.db_path)
         cursor = db.cursor()
         uid = str(uid)
-        cursor.execute("SELECT * FROM users WHERE uid=%s;", (uid))
+        cursor.execute("SELECT * FROM users WHERE uid=%s ;", (uid,))
         user = cursor.fetchone()
         db.close()
         if user:
