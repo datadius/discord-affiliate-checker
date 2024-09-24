@@ -27,8 +27,8 @@ class SQLAffiliate:
         now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         cursor = db.cursor()
         cursor.execute(
-            "INSERT INTO users (uid, approvalDatetime, username, deposit, exchange) VALUES (?,?,?,?,?);",
-            (uid, now, username, deposit, exchange),
+            "INSERT INTO users (uid, approvalDatetime, username, deposit, exchange) VALUES (%s,%s,%s,%s,%s);",
+            {uid, now, username, deposit, exchange},
         )
         db.commit()
         db.close()
@@ -36,7 +36,7 @@ class SQLAffiliate:
     def check_user_exists(self, uid):
         db = psycopg2.connect(**self.db_path)
         cursor = db.cursor()
-        cursor.execute("SELECT * FROM users WHERE uid=?;", (uid,))
+        cursor.execute("SELECT * FROM users WHERE uid=%s;", {uid,})
         user = cursor.fetchone()
         db.close()
         if user:
