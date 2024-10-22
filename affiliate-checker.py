@@ -1,5 +1,4 @@
 import discord
-from fairdesk import Fairdesk
 from phemex import Phemex
 from bingx import BingX
 from bybit import Bybit
@@ -165,17 +164,6 @@ class MyView(discord.ui.View):
         phemex = Phemex()
         await interaction.response.send_modal(
             MyModal(title="Phemex", uid_checker=phemex)
-        )
-
-    @discord.ui.button(
-        label="Fairdesk",
-        style=discord.ButtonStyle.primary,
-        emoji=discord.PartialEmoji(name="Fairdesk2", id=1203053186580221952),
-    )
-    async def fairdesk_callback(self, button, interaction):
-        fairdesk = Fairdesk()
-        await interaction.response.send_modal(
-            MyModal(title="Fairdesk", uid_checker=fairdesk)
         )
 
     @discord.ui.button(
