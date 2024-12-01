@@ -13,7 +13,7 @@ class BYDFI:
         r = requests.get(url)
         print(r.text)
         if r.status_code == 200:
-            user_info = orjson.loads(r.text)["data"]
+            user_info = orjson.loads(r.text)["data"][0]
 
             if (
                 user_info.get("deposit") is not None
