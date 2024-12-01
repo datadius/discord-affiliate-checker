@@ -12,7 +12,7 @@ class BYDFI:
         print(url)
         r = requests.get(url)
         print(r.text)
-        if r.status_code == 200:
+        if r.status_code == 200 and r.text != "":
             user_info = orjson.loads(r.text)["data"][0]
 
             if (
