@@ -157,6 +157,15 @@ class MyView(discord.ui.View):
         super().__init__(*args, **kwargs)
 
     @discord.ui.button(
+        label="BYDFI",
+        style=discord.ButtonStyle.primary,
+        emoji=discord.PartialEmoji(name="BYDFI", id=1312845002845585469),
+    )
+    async def bydfi_callback(self, button, interaction):
+        bydfi = BYDFI()
+        await interaction.response.send_modal(MyModal(title="BYDFI", uid_checker=bydfi))
+
+    @discord.ui.button(
         label="Phemex",
         style=discord.ButtonStyle.primary,
         emoji=discord.PartialEmoji(name="Phemex", id=1202314403358445658),
@@ -206,15 +215,6 @@ class MyView(discord.ui.View):
         await interaction.response.send_modal(
             MyModal(title="Blofin", uid_checker=blofin)
         )
-
-    @discord.ui.button(
-        label="BYDFI",
-        style=discord.ButtonStyle.primary,
-        emoji=discord.PartialEmoji(name="BYDFI", id=1312845002845585469),
-    )
-    async def bydfi_callback(self, button, interaction):
-        bydfi = BYDFI()
-        await interaction.response.send_modal(MyModal(title="BYDFI", uid_checker=bydfi))
 
 
 @bot.slash_command()
