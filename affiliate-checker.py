@@ -4,6 +4,7 @@ from bingx import BingX
 from bybit import Bybit
 from blofin import Blofin
 from coinbaseimpact import CoinbaseImpact
+from bydfi import BYDFI
 from postgresql_storage import SQLAffiliate
 import os
 import logging
@@ -93,11 +94,11 @@ class MyModal(discord.ui.Modal):
 
         try:
             if (
-                isinstance(self.uid_checker, Fairdesk)
-                or isinstance(self.uid_checker, Phemex)
+                isinstance(self.uid_checker, Phemex)
                 or isinstance(self.uid_checker, BingX)
                 or isinstance(self.uid_checker, Bybit)
                 or isinstance(self.uid_checker, Blofin)
+                or isinstance(self.uid_checker, BYDFI)
             ):
                 is_allowed_as_vip, deposit, found = self.uid_checker.get_uid_info(uid)
                 exchange = self.uid_checker.get_exchange_name()
@@ -205,6 +206,15 @@ class MyView(discord.ui.View):
         await interaction.response.send_modal(
             MyModal(title="Blofin", uid_checker=blofin)
         )
+
+    @discord.ui.button(
+        label="BYDFI",
+        style=discord.ButtonStyle.primary,
+        emoji=discord.PartialEmoji(name="BYDFI", id=1312845002845585469),
+    )
+    async def bydfi_callback(self, button, interaction):
+        bydfi = BYDFI()
+        await interaction.response.send_modal(MyModal(title="BYDFI", uid_checker=bydfi))
 
 
 @bot.slash_command()
