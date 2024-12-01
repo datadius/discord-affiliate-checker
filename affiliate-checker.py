@@ -210,13 +210,11 @@ class MyView(discord.ui.View):
     @discord.ui.button(
         label="BYDFI",
         style=discord.ButtonStyle.primary,
-        emoji=discord.PartialEmoji(name="bydfi", id=1258510663387582495),
+        emoji=discord.PartialEmoji(name="BYDFI", id=11312845002845585469),
     )
     async def bydfi_callback(self, button, interaction):
-        bydfi= BYDFI()
-        await interaction.response.send_modal(
-            MyModal(title="BYDFI", uid_checker=bydfi)
-        )
+        bydfi = BYDFI()
+        await interaction.response.send_modal(MyModal(title="BYDFI", uid_checker=bydfi))
 
 
 @bot.slash_command()
