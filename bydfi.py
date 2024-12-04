@@ -1,5 +1,6 @@
 import requests
 import orjson
+import os
 
 
 class BYDFI:
@@ -8,25 +9,25 @@ class BYDFI:
 
     def get_uid_info(self, uid, value=99):
         endpoint = f"api/agent/v1/public/partener_users_data"
-        url = f"{self.base_url}{endpoint}?partener={uid}"
+        KOLuid = os.getenv("KOLuid")
+        url = f"{self.base_url}{endpoint}?partener={KOLuid}"
         print(url)
         r = requests.get(url)
         print(r.text)
         if r.status_code == 200 and r.text != "":
-            user_info = orjson.loads(r.text)["data"][0]
-
-            if (
-                user_info.get("deposit") is not None
-                and user_info.get("uid") is not None
-            ):
-                balance = int(user_info.get("deposit").partition(".")[0])
-                return (
-                    balance > value,
-                    balance,
-                    True,
-                )
-            elif user_info.get("uid") is not None and user_info.get("deposit") is None:
-                return False, 0, True
+            user_info = orjson.loads(r.text)["data"]
+            if len(user_info) != 0:
+                for user in user_info:
+                    if user.get("uid") == uid:
+                        if user.get("deposit") is not None:
+                            balance = int(user.get("deposit").partition(".")[0])
+                            return (
+                                balance > value,
+                                balance,
+                                True,
+                            )
+                        elif user.get("deposit") is None:
+                            return False, 0, True
 
         return False, 0, False
 
