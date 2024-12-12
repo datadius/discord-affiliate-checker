@@ -20,7 +20,7 @@ class BYDFI:
                 for user in user_info:
                     if user.get("uid") == str(uid):
                         if user.get("deposit") is not None:
-                            balance = int(user.get("deposit").partition(".")[0])
+                            balance = int(user.get("deposit"))
                             return (
                                 balance > value,
                                 balance,
