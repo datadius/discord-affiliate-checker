@@ -18,9 +18,9 @@ class BYDFI:
             user_info = orjson.loads(r.text)["data"]
             if len(user_info) != 0:
                 for user in user_info:
-                    if user.get("uid") == uid:
+                    if user.get("uid") == str(uid):
                         if user.get("deposit") is not None:
-                            balance = int(user.get("deposit").partition(".")[0])
+                            balance = int(user.get("deposit"))
                             return (
                                 balance > value,
                                 balance,
